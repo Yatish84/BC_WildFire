@@ -1,14 +1,17 @@
 # Data — large, downloaded, never committed. GitHub is for code, not data.
 # The download scripts in src/data/ re-fetch everything into data/raw/.
-data/raw/
-data/interim/
-data/processed/
-data/external/
-# Keep the empty folders in git with .gitkeep files (above rules ignore contents,
-# but .gitkeep is explicitly kept — see the ! rules below).
+#
+# Note the pattern: "data/raw/*" (contents) instead of "data/raw/" (the folder).
+# Git cannot re-include a file inside an excluded folder, so excluding the
+# folder itself would also exclude the .gitkeep files that keep the empty
+# folders in git. Excluding the contents instead lets the ! rules below work.
+data/raw/*
 !data/raw/.gitkeep
+data/interim/*
 !data/interim/.gitkeep
+data/processed/*
 !data/processed/.gitkeep
+data/external/*
 !data/external/.gitkeep
 
 # Common data file types, in case one lands outside data/
