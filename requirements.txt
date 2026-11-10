@@ -1,0 +1,12 @@
+# BC Wildfire — Python dependencies
+# Install with: pip install -r requirements.txt
+# Java 17 is also required for Spark (not a pip package): brew install openjdk@17
+
+pyspark>=3.5
+pandas>=2.0
+numpy>=1.26
+xarray>=2024.0
+netCDF4>=1.6
+pyarrow>=14.0
+matplotlib>=3.8
+jupyter>=1.0

@@ -1,0 +1,42 @@
+# Data — large, downloaded, never committed. GitHub is for code, not data.
+# The download scripts in src/data/ re-fetch everything into data/raw/.
+data/raw/
+data/interim/
+data/processed/
+data/external/
+# Keep the empty folders in git with .gitkeep files (above rules ignore contents,
+# but .gitkeep is explicitly kept — see the ! rules below).
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+!data/external/.gitkeep
+
+# Common data file types, in case one lands outside data/
+*.nc
+*.nc4
+*.parquet
+*.bz2
+*.geojson
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# Spark / Java
+derby.log
+metastore_db/
+spark-warehouse/
+
+# Editors
+.vscode/
+.idea/
