@@ -2,7 +2,7 @@
 
 **Course:** FDU Vancouver, CSCI 6686 Big Data Analytics (Dr. Salma Noor)
 **Team:** Bhupinder Bhattarai (2103283) · Yatish Karkera (2148179)
-**Status:** Starting from zero on 9 Nov 2026. This file is the living plan — it is updated as we brainstorm and as decisions are made.
+**Status:** Starting from zero on 9 Nov 2026. This file is the living plan — it is updated as we brainstorm and as decisions are made. **Step 1 complete 10 Nov 2026; Step 2 complete 11 Nov 2026 — full panel built (4,672,823 rows). Next: check the panel in Spark, then Step 3 modelling.**
 **Final submission:** 9 Dec 2026
 **Presentation:** 10 Dec 2026
 
@@ -19,6 +19,8 @@
 | 9 Nov 2026 | **Spatial unit approved:** a map of BC divided into grid squares (0.25°, about 25 km), predicting which squares are at risk tomorrow — not fire centres. Primary weather source is therefore ERA5 gridded FWI, not station aggregation. |
 | 9 Nov 2026 | **ERA5 source resolved:** Zenodo NRCan FWI files end in 2018 and are global (~440 MB/year/variable), so they cannot cover 2015–2024. **ERA5-FWI-SN chosen instead** — Canada-only, 1950–2025, ~25 MB/file, 70 files ≈ 1.7 GB for 2015–2024, verified by opening the 2023 FWI file. See Appendix B. Plan §2.1 and §1.4 updated to match; the Bhupinder brief was rewritten to the corrected grid version (see `workspace/big-data-bhupinder-brief.md`). |
 | 9 Nov 2026 | **Literature:** added the peer-reviewed paper describing ERA5-FWI-SN — Benoit et al., *Earth Syst. Sci. Data*, 18, 5995–6015, 2026 (doi: 10.5194/essd-18-5995-2026) — as literature item 3 in §6 and as the full citation in the data-source readme §2. The paper's dataset DOI (10.5683/SP3/4B18XZ) is the one already in the plan. |
+| 10 Nov 2026 | **Step 1 complete:** Spark proof passed — xarray flattened 494,049 rows and Spark counted 494,049 rows. Fixes needed on the way: Java 17 installed (Mac had Java 11) and the date stored as text so Spark can read the Parquet file. Repo in sync with GitHub (3 commits: initial setup, `.gitignore` fix, Spark proof fix). **Step 2 started:** Yatish agreed to download the remaining ERA5 files and build the full panel; resumable download script created at `src/data/download_era5_fwi.py` (70 files, 7 variables × 2015–2024, 1,692 MB). **Decisions resolved (§9):** local PySpark on Yatish's Mac (no Databricks/Colab fallback needed) and the GitHub repo https://github.com/Yatish84/BC_WildFire.git. Still open: Bhupinder to agree the 2015–2024 period, and Phase 2 variables. |
+| 11 Nov 2026 | **Step 2 complete:** full panel built — `data/processed/panel_2015-2024.parquet` (272.1 MB), **4,672,823 square-days**, columns date/latitude/longitude + 7 FWI codes + `fire_next_day` + `fire_same_day`. `fire_next_day = 1` on 11,307 rows (0.242%); `fire_same_day = 1` on 11,344. Coverage: 12,983 fire square-days in 2015-04-01 to 2024-11-01, of which 1,676 (12.9%) have no panel row the day before the fire — so recall is capped at 87.1% before modelling. Rows with any FWI code missing: 0 (all seven codes move together). Two fixes on the way: NFDB download script added (`src/data/download_nfdb.py`); panel join bug fixed (years for one variable must be stacked before the seven variables are joined side by side). Grid rule decided: fires assigned to the nearest 0.25° grid point. Next: check the panel in Spark (`src/data/check_panel_spark.py`), then Step 3 modelling. |
 
 ---
 
@@ -226,8 +228,8 @@ Deliverable 1 requires ≥8 relevant sources, ≥5 peer-reviewed, IEEE style, pr
 ## 9. Decisions still open
 
 1. **Period / source — resolved by the audit, Bhupinder to agree:** 2015–2024, fire season April–October, ERA5-FWI-SN (see Appendix B). Yatish approved the grid version; Bhupinder has not yet confirmed it.
-2. **Environment:** local PySpark on your Macs, or Databricks Community / Colab — what do you both already have installed?
-3. **Repo:** where will the code live (GitHub, shared folder)? Who creates it?
+2. **Environment — resolved 10 Nov 2026:** local PySpark on Yatish's Mac. Spark proof passed there (494,049 rows), so the Databricks/Colab fallback is not needed.
+3. **Repo — resolved 10 Nov 2026:** public GitHub repo https://github.com/Yatish84/BC_WildFire.git, in sync (3 commits as of 10 Nov). Data stays git-ignored on the Mac.
 4. **Phase 2 variables:** add ERA5 soil moisture / temperature after the FWI-only model works, or keep it FWI-only?
 
 ---
