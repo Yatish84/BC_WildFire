@@ -110,7 +110,11 @@ Time-ordered splits only — never shuffle randomly, and never use weather after
 
 ## Status
 
-Step 1 (data audit) in progress as of 9 Nov 2026. Audited so far: NFDB, ERA5-FWI-SN (2023 file opened), CWFIS station observations (2024 file opened), BC incident locations (27,835 incidents downloaded and counted). Remaining in Step 1: download the remaining ERA5-FWI-SN files, run the Spark proof, and confirm the environment (local PySpark vs Databricks/Colab) and the repo setup.
+**Step 1 complete (10 Nov 2026)** — data audit done, and the Spark proof passed: xarray flattened 494,049 rows from the 2023 FWI file and Spark counted 494,049 rows back. Environment is local PySpark on macOS (Java 17).
+
+**Step 2 complete (11 Nov 2026)** — the full square-day panel is built and checked: `data/processed/panel_2015-2024.parquet` (272.1 MB), **4,672,823 rows** — every BC 0.25° square × every fire-season day, 2015–2024 — with all seven FWI codes (FFMC, DMC, DC, ISI, BUI, FWI, DSR) and a 1-day-ahead label. `fire_next_day = 1` on **11,307 rows (0.242%)**; 0 rows have any FWI code missing. Fires are assigned to the nearest 0.25° grid point. Honest limit: 1,676 of 12,983 fire square-days (12.9%) have no panel row the day before the fire, so recall is capped at 87.1% before modelling. Spark re-read the panel and confirmed every count (commit `34572b1`).
+
+**Step 3 in progress** — exploring the panel first (`notebooks/02_exploration.ipynb`): FWI on fire days is much higher than on non-fire days (median 14.5 vs 2.4), the fire rate climbs smoothly with FWI (0.09% at FWI 0–5 to 1.20% at FWI 30+), and the seven codes carry roughly four or five distinct signals (DMC ≈ BUI, ISI ≈ FWI ≈ DSR; DC is the most independent). Modelling (logistic regression, decision tree, random forest vs always-predict-no-fire baseline) comes next, on time-ordered splits.
 
 ## Licence
 
